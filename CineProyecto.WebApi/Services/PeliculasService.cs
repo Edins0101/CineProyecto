@@ -40,7 +40,7 @@ namespace CineProyecto.WebApi.Services
             }
         }
 
-        public async Task<Response<Pelicula?>> Delete(int id)
+        public async Task<Response<Pelicula?>> Delete(string id)
         {
 
             var pelicula = await _DbContext.FindAsync<Pelicula>(id);
@@ -66,7 +66,7 @@ namespace CineProyecto.WebApi.Services
             };
         }
 
-        public async Task<Response<Pelicula?>> Get(int id)
+        public async Task<Response<Pelicula?>> Get(string id)
         {
             var pelicula = await _DbContext.FindAsync<Pelicula>(id);
 
@@ -85,8 +85,7 @@ namespace CineProyecto.WebApi.Services
                 code = MessagesCode.Success,
                 message = "Busqueda con exito",
                 data = pelicula
-            }
-            ;
+            };
         }
 
         public async Task<Response<List<Pelicula>>> Get()
@@ -110,7 +109,7 @@ namespace CineProyecto.WebApi.Services
             };
         }
 
-        public async Task<Response<Pelicula?>> Get(string name)
+        public async Task<Response<Pelicula?>> GetByName(string name)
         {
             var pelicula = await _DbContext.Peliculas
         .FirstOrDefaultAsync(p => p.Name == name);
@@ -131,7 +130,7 @@ namespace CineProyecto.WebApi.Services
             };
         }
 
-        public async Task<Response<Pelicula?>> Update(int id, UpdatePeliculaRequest data)
+        public async Task<Response<Pelicula?>> Update(string id, UpdatePeliculaRequest data)
         {
             try
             {

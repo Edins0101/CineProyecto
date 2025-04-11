@@ -18,16 +18,16 @@ namespace CineProyecto.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Response<Pelicula?>>> Get(int id)
+        public async Task<ActionResult<Response<Pelicula?>>> Get(string id)
         {
             var response = await _peliculasService.Get(id);
             return StatusCode(response.code, response);
         }
 
         [HttpGet("name/{name}")]
-        public async Task<ActionResult<Response<Pelicula?>>> Get(string name)
+        public async Task<ActionResult<Response<Pelicula?>>> GetByName(string name)
         {
-            var response = await _peliculasService.Get(name);
+            var response = await _peliculasService.GetByName(name);
             return StatusCode(response.code, response);
         }
 
@@ -39,14 +39,14 @@ namespace CineProyecto.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Response<Pelicula?>>> Put(int id, [FromBody] UpdatePeliculaRequest model)
+        public async Task<ActionResult<Response<Pelicula?>>> Put(string id, [FromBody] UpdatePeliculaRequest model)
         {
             var response = await _peliculasService.Update(id, model);
             return StatusCode(response.code, response);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Response<Pelicula?>>> Delete(int id)
+        public async Task<ActionResult<Response<Pelicula?>>> Delete(string id)
         {
             var response = await _peliculasService.Delete(id);
             return StatusCode(response.code, response);

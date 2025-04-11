@@ -12,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PostgresContext>(options => { options.UseNpgsql(builder.Configuration.GetConnectionString("dataBase")); });
 builder.Services.AddScoped<IPeliculasService, PeliculasService>();
+builder.Services.AddScoped<ISalaService, SalaService>();
 
 builder.Services.AddControllers();
 var app = builder.Build();

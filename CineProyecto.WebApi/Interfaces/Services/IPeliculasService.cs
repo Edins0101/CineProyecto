@@ -11,12 +11,12 @@ namespace CineProyecto.WebApi.Interfaces.Services
 
         public Task<Response<List<Pelicula?>>> Get();
 
-        public Task<Response<Pelicula?>> Get(int id);
+        public Task<Response<Pelicula?>> Get(string id);
 
-        public Task<Response<Pelicula>> Get(string name);
+        public Task<Response<Pelicula>> GetByName(string name);
 
-        public Task<Response<Pelicula?>> Update(int id,UpdatePeliculaRequest newPelicula);
+        public Task<Response<Pelicula?>> Update(string id,UpdatePeliculaRequest newPelicula);
 
-        public Task<Response<Pelicula?>> Delete(int id);
+        public Task<Response<Pelicula?>> Delete(string id);
     }
 }
