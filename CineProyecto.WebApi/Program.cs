@@ -1,7 +1,8 @@
-using CineProyecto.WebApi.Classes;
-using CineProyecto.WebApi.Interfaces.Classes;
+using CineProyecto.WebApi.Controllers;
 using CineProyecto.WebApi.Interfaces.Services;
+using CineProyecto.WebApi.Models.Db;
 using CineProyecto.WebApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<PostgresContext>(options => { options.UseNpgsql(builder.Configuration.GetConnectionString("dataBase")); });
 builder.Services.AddScoped<IPeliculasService, PeliculasService>();
-builder.Services.AddSingleton<IPeliculasManager, PeliculasManager>();
 
 builder.Services.AddControllers();
 var app = builder.Build();

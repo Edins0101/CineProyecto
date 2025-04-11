@@ -1,71 +1,174 @@
-﻿using CineProyecto.WebApi.Entities;
-using CineProyecto.WebApi.Interfaces.Classes;
-using CineProyecto.WebApi.Interfaces.Services;
+﻿using CineProyecto.WebApi.Interfaces.Services;
+using CineProyecto.WebApi.Models.Db;
 using CineProyecto.WebApi.Models.Requests.Peliculas;
+using CineProyecto.WebApi.Models.Response;
+using Microsoft.EntityFrameworkCore;
 
 namespace CineProyecto.WebApi.Services
 {
-    public class PeliculasService(IPeliculasManager peliculasManager) : IPeliculasService
+    public class PeliculasService(PostgresContext _DbContext) : IPeliculasService
     {
-        private readonly IPeliculasManager _peliculasManager = peliculasManager;
 
-        public Pelicula Create(CreatePeliculaRequest model)
+        public async Task<Response<Pelicula?>> Create(CreatePeliculaRequest data)
         {
-            var pelicula = _peliculasManager.Create(new Pelicula
+            try
             {
-                Id = _peliculasManager.Get().Count + 1,
-                Name = model.Name,
-                Url = model.Url,
-                CreatedAt = DateTime.UtcNow,
-            });
+                var pelicula = new Pelicula()
+                {
+                    Name = data.Name, 
+                    Duracion = data.Duracion,
 
-            return pelicula;
+                }; 
+                var result = await _DbContext.AddAsync(pelicula);
+                await _DbContext.SaveChangesAsync();
 
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.Created,
+                    message = "Película creada correctamente",
+                    data = result.Entity
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.Error,
+                    message = $"Error al crear la película: {ex.Message}",
+                    data = null
+                };
+            }
         }
-        public List<Pelicula>? Get()
-        {
-            var peliculas = _peliculasManager.Get();
 
-            if (peliculas == null)
+        public async Task<Response<Pelicula?>> Delete(int id)
+        {
+
+            var pelicula = await _DbContext.FindAsync<Pelicula>(id);
+
+            if (pelicula == null)
             {
-                return peliculas = [];
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.Error,
+                    message = "Película no encontrada",
+                    data = null
+                };
             }
 
-            return peliculas;
-        }
-        public Pelicula? GetById(int id)
-        {
-            var pelicula = _peliculasManager.Get(id);
+            _DbContext.Remove(pelicula);
+            await _DbContext.SaveChangesAsync();
 
-            return pelicula;
-        }
-        public Pelicula? GetByName(string name)
-        {
-            var pelicula = _peliculasManager.Get(name);
-
-            return pelicula;
-        }
-
-        public Pelicula Update(int id,UpdatePeliculaRequest model)
-        {
-            var oldPelicula = _peliculasManager.Get(id);
-
-            var newPelicula = _peliculasManager.Put(new Pelicula
+            return new Response<Pelicula?>
             {
-                Id = oldPelicula.Id,
-                Name = model.Name,
-                Url = model.Url,
-                CreatedAt = DateTime.UtcNow,
-            });
-
-            return newPelicula;
+                code = MessagesCode.Success,
+                message = "Película eliminada correctamente",
+                data = pelicula
+            };
         }
-        public Pelicula Delete(int id)
+
+        public async Task<Response<Pelicula?>> Get(int id)
         {
-            var pelicula = _peliculasManager.Delete(id);
+            var pelicula = await _DbContext.FindAsync<Pelicula>(id);
 
-            return pelicula;
+            if (pelicula == null)
+            {
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.NotFound,
+                    message = "No se encontro pelicula con es id",
+                    data = null
+                };
+            }
 
+            return new Response<Pelicula?>
+            {
+                code = MessagesCode.Success,
+                message = "Busqueda con exito",
+                data = pelicula
+            }
+            ;
+        }
+
+        public async Task<Response<List<Pelicula>>> Get()
+        {
+            var peliculas = await _DbContext.Peliculas.ToListAsync();
+
+            if (peliculas == null || peliculas.Count == 0)
+            {
+                return new Response<List<Pelicula>>
+                {
+                    code = MessagesCode.NotFound,
+                    message = "No existen peliculas",
+                    data = peliculas = []
+                };
+            }
+            return new Response<List<Pelicula>>
+            {
+                code = MessagesCode.Success,
+                message = "Busqueda con exito",
+                data = peliculas
+            };
+        }
+
+        public async Task<Response<Pelicula?>> Get(string name)
+        {
+            var pelicula = await _DbContext.Peliculas
+        .FirstOrDefaultAsync(p => p.Name == name);
+            if (pelicula == null)
+            {
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.NotFound,
+                    message = "No se encontro pelicula con ese  nombre",
+                    data = null
+                };
+            }
+            return new Response<Pelicula?>
+            {
+                code = MessagesCode.Success,
+                message = "Busqueda con exito",
+                data = pelicula
+            };
+        }
+
+        public async Task<Response<Pelicula?>> Update(int id, UpdatePeliculaRequest data)
+        {
+            try
+            {
+                var existingPelicula = await _DbContext.Peliculas.FindAsync(id);
+
+                if (existingPelicula == null)
+                {
+                    return new Response<Pelicula?>
+                    {
+                        code = MessagesCode.NotFound,
+                        message = "Película no encontrada",
+                        data = null
+                    };
+                }
+
+                existingPelicula.Name = data.Name;
+                existingPelicula.Duracion = data.Duracion;
+
+                _DbContext.Peliculas.Update(existingPelicula);
+                await _DbContext.SaveChangesAsync();
+
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.Updated,
+                    message = "Película actualizada correctamente",
+                    data = existingPelicula
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response<Pelicula?>
+                {
+                    code = MessagesCode.Error,
+                    message = $"Error al actualizar la película: {ex.Message}",
+                    data = null
+                };
+            }
         }
     }
 }

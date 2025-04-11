@@ -1,20 +1,22 @@
-﻿using CineProyecto.WebApi.Entities;
+﻿
+using CineProyecto.WebApi.Models.Db;
 using CineProyecto.WebApi.Models.Requests.Peliculas;
+using CineProyecto.WebApi.Models.Response;
 
 namespace CineProyecto.WebApi.Interfaces.Services
 {
     public interface IPeliculasService
     {
-        public Pelicula Create(CreatePeliculaRequest model);
+        public Task<Response<Pelicula?>> Create(CreatePeliculaRequest model);
 
-        public List<Pelicula>? Get();
+        public Task<Response<List<Pelicula?>>> Get();
 
-        public Pelicula? GetById(int id);
+        public Task<Response<Pelicula?>> Get(int id);
 
-        public Pelicula? GetByName(string name);
+        public Task<Response<Pelicula>> Get(string name);
 
-        public Pelicula Update(int id,UpdatePeliculaRequest newPelicula);
+        public Task<Response<Pelicula?>> Update(int id,UpdatePeliculaRequest newPelicula);
 
-        public Pelicula Delete(int id);
+        public Task<Response<Pelicula?>> Delete(int id);
     }
 }

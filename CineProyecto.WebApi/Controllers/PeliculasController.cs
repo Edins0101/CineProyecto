@@ -1,58 +1,55 @@
-﻿using CineProyecto.WebApi.Entities;
-using CineProyecto.WebApi.Interfaces.Services;
+﻿using CineProyecto.WebApi.Interfaces.Services;
+using CineProyecto.WebApi.Models.Db;
 using CineProyecto.WebApi.Models.Requests.Peliculas;
-using CineProyecto.WebApi.Services;
+using CineProyecto.WebApi.Models.Response;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CineProyecto.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PeliculasController(IPeliculasService peliculasService) : ControllerBase
+    public class PeliculasController(IPeliculasService _peliculasService) : ControllerBase
     {
-        private readonly IPeliculasService _peliculasService = peliculasService; 
-
-        // GET: api/<PeliculasController>
         [HttpGet]
-        public List<Pelicula>? Get()
+        public async Task<ActionResult<Response<List<Pelicula>>>> Get()
         {
-            return _peliculasService.Get(); 
+            var response = await _peliculasService.Get();
+            return StatusCode(response.code, response);
         }
 
-        // GET api/<PeliculasController>/5
         [HttpGet("{id}")]
-        public Pelicula? Get(int id)
+        public async Task<ActionResult<Response<Pelicula?>>> Get(int id)
         {
-            return _peliculasService.GetById(id);
+            var response = await _peliculasService.Get(id);
+            return StatusCode(response.code, response);
         }
 
         [HttpGet("name/{name}")]
-        public Pelicula? Get(string name)
+        public async Task<ActionResult<Response<Pelicula?>>> Get(string name)
         {
-            return _peliculasService.GetByName(name);
+            var response = await _peliculasService.Get(name);
+            return StatusCode(response.code, response);
         }
 
-        // POST api/<PeliculasController>
         [HttpPost]
-        public Pelicula Post([FromBody] CreatePeliculaRequest model)
+        public async Task<ActionResult<Response<Pelicula?>>> Post([FromBody] CreatePeliculaRequest model)
         {
-            return _peliculasService.Create(model);
+            var response = await _peliculasService.Create(model);
+            return StatusCode(response.code, response);
         }
 
-        // PUT api/<PeliculasController>/5
         [HttpPut("{id}")]
-        public Pelicula Put(int id, [FromBody] UpdatePeliculaRequest model)
+        public async Task<ActionResult<Response<Pelicula?>>> Put(int id, [FromBody] UpdatePeliculaRequest model)
         {
-            return _peliculasService.Update(id, model);
+            var response = await _peliculasService.Update(id, model);
+            return StatusCode(response.code, response);
         }
 
-        // DELETE api/<PeliculasController>/5
         [HttpDelete("{id}")]
-        public Pelicula Delete(int id)
+        public async Task<ActionResult<Response<Pelicula?>>> Delete(int id)
         {
-            return _peliculasService.Delete(id);
+            var response = await _peliculasService.Delete(id);
+            return StatusCode(response.code, response);
         }
     }
 }
